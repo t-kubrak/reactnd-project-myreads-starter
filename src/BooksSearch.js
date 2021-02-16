@@ -22,16 +22,43 @@ class BooksSearch extends Component {
         }
 
         BooksAPI.search(query.trim())
-            .then((books) => {
+            .then((booksList) => {
+                let books = Array.isArray(booksList) ? booksList : [];
+
+                // Set the correct shelf in search results
+                books = this.matchBooks(books, this.props.shelfBooks);
+
                 this.setState(() => ({
-                    books: Array.isArray(books) ? books : []
+                    books: books
                 }));
             })
     }, 700);
 
-    render() {
-        const {onBookShelfChange} = this.props;
+    matchBooks(searchResultBooks, shelfBooks) {
+        return searchResultBooks.map((book) => {
+            const bookInShelf = shelfBooks.find(shelfBook => shelfBook.id === book.id);
+            if (bookInShelf) {
+                book.shelf = bookInShelf.shelf
+            }
 
+            return book;
+        })
+    }
+
+    handleBookShelfChange(book, shelf) {
+        this.props.onBookShelfChange(book, shelf);
+
+        // Persist the shelf in search result
+        this.state.books.map((bookToFind) => {
+            if (bookToFind.id === book.id) {
+                bookToFind.shelf = shelf;
+            }
+
+            return bookToFind;
+        })
+    }
+
+    render() {
         return (
             <div className="search-books">
                 <div className="search-books-bar">
@@ -52,7 +79,7 @@ class BooksSearch extends Component {
                     </div>
                 </div>
                 <div className="search-books-results">
-                    <BooksGrid books={this.state.books} onBookShelfChange={onBookShelfChange} />
+                    <BooksGrid books={this.state.books} onBookShelfChange={(book, shelf) => {this.handleBookShelfChange(book, shelf)}} />
                 </div>
             </div>
         )
