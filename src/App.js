@@ -3,6 +3,7 @@ import React from 'react'
 import './App.css'
 import BooksList from './BooksList';
 import BooksSearch from './BooksSearch';
+import {Route} from 'react-router-dom';
 
 class BooksApp extends React.Component {
   state = {
@@ -18,11 +19,12 @@ class BooksApp extends React.Component {
   render() {
     return (
       <div className="app">
-        {this.state.showSearchPage ? (
-          <BooksSearch />
-        ) : (
+        <Route exact path='/' render={() => (
           <BooksList />
-        )}
+        )} />
+        <Route path='/search' render={({history}) => (
+          <BooksSearch />
+        )} />
       </div>
     )
   }
