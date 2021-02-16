@@ -3,8 +3,13 @@ import {Link} from "react-router-dom";
 import BooksGrid from "./BooksGrid";
 import * as BooksAPI from "./BooksAPI";
 import {debounce} from 'debounce';
+import PropTypes from "prop-types";
 
 class BooksSearch extends Component {
+    static propTypes = {
+        onBookShelfChange: PropTypes.func.isRequired,
+    }
+
     state = {
         books: []
     }
@@ -25,6 +30,8 @@ class BooksSearch extends Component {
     }, 700);
 
     render() {
+        const {onBookShelfChange} = this.props;
+
         return (
             <div className="search-books">
                 <div className="search-books-bar">
@@ -45,7 +52,7 @@ class BooksSearch extends Component {
                     </div>
                 </div>
                 <div className="search-books-results">
-                    <BooksGrid books={this.state.books} />
+                    <BooksGrid books={this.state.books} onBookShelfChange={onBookShelfChange} />
                 </div>
             </div>
         )

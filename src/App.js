@@ -11,21 +11,39 @@ class BooksApp extends React.Component {
     }
 
     componentDidMount() {
-        BooksAPI.getAll()
-            .then((books) => {
-                console.log(books);
-                this.setState(() => ({books}))
+        BooksAPI.getAll().then((books) => {
+            this.setState(() => ({books}))
+        })
+    }
+
+    onBookShelfChange = (book, shelf) => {
+        BooksAPI.update(book, shelf).then((response) => {
+            let books = this.state.books.map((bookToFind) => {
+                if (bookToFind.id === book.id) {
+                    bookToFind.shelf = shelf;
+                }
+
+                return bookToFind;
             })
+
+            // Get book from API and add it to state if it's not there
+            const inBookShelf = this.state.books.find(bookToFind => bookToFind.id === book.id);
+            if (!inBookShelf) {
+                BooksAPI.get(book.id).then(book => books.push(book));
+            }
+
+            this.setState(() => ({books}))
+        })
     }
 
     render() {
         return (
             <div className="app">
                 <Route exact path='/' render={() => (
-                    <BooksList books={this.state.books} />
+                    <BooksList onBookShelfChange={this.onBookShelfChange} books={this.state.books} />
                 )}/>
                 <Route path='/search' render={({history}) => (
-                    <BooksSearch/>
+                    <BooksSearch onBookShelfChange={this.onBookShelfChange} />
                 )}/>
             </div>
         )
