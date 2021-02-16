@@ -1,7 +1,29 @@
 import React, {Component} from "react";
 import {Link} from "react-router-dom";
+import BooksGrid from "./BooksGrid";
+import * as BooksAPI from "./BooksAPI";
+import {debounce} from 'debounce';
 
 class BooksSearch extends Component {
+    state = {
+        books: []
+    }
+
+    searchBook = debounce((query) => {
+        if (!query) {
+            this.setState(() => ({
+                books: []
+            }));
+        }
+
+        BooksAPI.search(query.trim())
+            .then((books) => {
+                this.setState(() => ({
+                    books: Array.isArray(books) ? books : []
+                }));
+            })
+    }, 700);
+
     render() {
         return (
             <div className="search-books">
@@ -16,12 +38,14 @@ class BooksSearch extends Component {
                           However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
                           you don't find a specific author or title. Every search is limited by search terms.
                         */}
-                        <input type="text" placeholder="Search by title or author"/>
-
+                        <input onChange={(e) => {
+                            e.persist();
+                            this.searchBook(e.target.value)
+                        }} type="text" placeholder="Search by title or author"/>
                     </div>
                 </div>
                 <div className="search-books-results">
-                    <ol className="books-grid"></ol>
+                    <BooksGrid books={this.state.books} />
                 </div>
             </div>
         )
