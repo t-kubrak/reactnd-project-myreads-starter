@@ -19,19 +19,19 @@ class BooksSearch extends Component {
             this.setState(() => ({
                 books: []
             }));
+        } else {
+            BooksAPI.search(query.trim())
+                .then((booksList) => {
+                    let books = Array.isArray(booksList) ? booksList : [];
+
+                    // Set the correct shelf in search results
+                    books = this.matchBooks(books, this.props.shelfBooks);
+
+                    this.setState(() => ({
+                        books: books
+                    }));
+                })
         }
-
-        BooksAPI.search(query.trim())
-            .then((booksList) => {
-                let books = Array.isArray(booksList) ? booksList : [];
-
-                // Set the correct shelf in search results
-                books = this.matchBooks(books, this.props.shelfBooks);
-
-                this.setState(() => ({
-                    books: books
-                }));
-            })
     }, 700);
 
     matchBooks(searchResultBooks, shelfBooks) {
