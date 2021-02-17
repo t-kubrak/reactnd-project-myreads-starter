@@ -49,13 +49,15 @@ class BooksSearch extends Component {
         this.props.onBookShelfChange(book, shelf);
 
         // Persist the shelf in search result
-        this.state.books.map((bookToFind) => {
-            if (bookToFind.id === book.id) {
-                bookToFind.shelf = shelf;
-            }
+        this.setState(() => (
+            this.state.books.map((bookToFind) => {
+                if (bookToFind.id === book.id) {
+                    bookToFind.shelf = shelf;
+                }
 
-            return bookToFind;
-        })
+                return bookToFind;
+            })
+        ));
     }
 
     render() {
